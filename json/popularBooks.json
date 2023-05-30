@@ -1,0 +1,23 @@
+[
+  {
+    "rating": 4.5,
+    "title": "THE WINNER STANDS ALONE",
+    "text": "Paulo Coelho",
+    "img": "assets/images/the winner stand alone.jpg",
+    "audio": ""
+  },
+  {
+    "rating": 4.8,
+    "title": "HARRY POTTER",
+    "text": "J.K Rowling",
+    "img": "assets/images/harrypotter.jpg",
+    "audio": ""
+  },
+  {
+    "rating": 4.0,
+    "title": "LAST THING",
+    "text": "Laura Dave",
+    "img": "assets/images/last_thing.jpg",
+    "audio": ""
+  }
+]
