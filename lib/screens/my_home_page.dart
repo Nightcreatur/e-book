@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ebook/widget/my_tab.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -14,13 +15,19 @@ class _MyHomePageState extends State<MyHomePage>
   ScrollController? _scrollController;
   TabController? _tabController;
   List? popularBooks;
-  ReadData() async {
-    await DefaultAssetBundle.of(context)
-        .loadString("json/popularBooks.json")
-        .then((value) {
-      setState(() {
-        popularBooks = json.decode(value);
-      });
+  List? books;
+  readData() async {
+    final assetBundle = DefaultAssetBundle.of(context);
+
+    final popularBooksData =
+        await assetBundle.loadString("json/popularBooks.json");
+    setState(() {
+      popularBooks = json.decode(popularBooksData);
+    });
+
+    final booksData = await assetBundle.loadString("json/books.json");
+    setState(() {
+      books = json.decode(booksData);
     });
   }
 
@@ -29,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _scrollController = ScrollController();
-    ReadData();
+    readData();
   }
 
   @override
@@ -118,45 +125,10 @@ class _MyHomePageState extends State<MyHomePage>
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 20, left: 15),
                             child: TabBar(
-                                tabs: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    height: 50,
-                                    width: 120,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.black),
-                                    child: const Text(
-                                      'New',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    height: 50,
-                                    width: 120,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.black),
-                                    child: const Text(
-                                      'New',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    height: 50,
-                                    width: 120,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.black),
-                                    child: const Text(
-                                      'New',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  )
+                                tabs: const [
+                                  MyTabs(color: Colors.white, text: "New"),
+                                  MyTabs(color: Colors.white, text: "Popular"),
+                                  MyTabs(color: Colors.white, text: "Trending")
                                 ],
                                 labelPadding: const EdgeInsets.only(right: 15),
                                 controller: _tabController,
@@ -170,31 +142,78 @@ class _MyHomePageState extends State<MyHomePage>
                       )
                     ];
                   },
-                  body: TabBarView(controller: _tabController, children: const [
-                    Material(
-                      child: ListTile(
-                        title: Text('Content'),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.grey,
-                        ),
-                      ),
-                    ),
-                    Material(
-                      child: ListTile(
-                        title: Text('Content'),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.grey,
-                        ),
-                      ),
-                    ),
-                    Material(
-                      child: ListTile(
-                        title: Text('Content'),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.grey,
-                        ),
-                      ),
-                    )
+                  body: TabBarView(controller: _tabController, children: [
+                    ListView.builder(
+                        itemCount: books == null ? 0 : books!.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.all(8),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        blurRadius: 2,
+                                        offset: const Offset(0, 0),
+                                        color: Colors.grey.withOpacity(0.2)),
+                                  ]),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 90,
+                                      height: 120,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          image: DecorationImage(
+                                              image: AssetImage(
+                                                  books![index]['img']))),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.star,
+                                              color: Color.fromARGB(
+                                                  255, 231, 156, 57),
+                                              size: 24,
+                                            ),
+                                            Text(books![index]['rating'])
+                                          ],
+                                        ),
+                                        Text(
+                                          books![index]['title'],
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        Text(
+                                          books![index]['text'],
+                                          style: const TextStyle(
+                                              color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                    Material(),
+                    Material(),
                   ]),
                 ),
               )
